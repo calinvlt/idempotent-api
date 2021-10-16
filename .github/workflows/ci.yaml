@@ -14,5 +14,5 @@ jobs:
         working-directory: ./src/Idempotent.Core
         run: dotnet build --configuration Release
       - name: Test
-        working-directory: ./tests/Idempotent.Core
+        working-directory: ./tests/Idempotent.Core.Tests
         run: dotnet test --configuration Release --no-build
