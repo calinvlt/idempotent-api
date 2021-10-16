@@ -11,6 +11,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build
+        working-directory: ./src/Idempotent.Core
         run: dotnet build --configuration Release
       - name: Test
+        working-directory: ./tests/Idempotent.Core
         run: dotnet test --configuration Release --no-build
