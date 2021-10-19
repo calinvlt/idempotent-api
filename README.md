@@ -1,3 +1,5 @@
+![Continuous Integration](https://github.com/calinvlt/idempotent-api/actions/workflows/ci.yaml/badge.svg)
+
 ### Introduction
 
 In a microservice architecture we no longer have transactions, specifically database ACID transactions. For example, if from an application we call 3 services, there is no automatic mechanism like a database transaction to guarantee all the operations were completed sucessfully or, in case of errors, all the operations have been rolledback so the data is consistent; basically there are no distributed transactions.
