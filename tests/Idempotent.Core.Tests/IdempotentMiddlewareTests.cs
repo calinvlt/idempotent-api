@@ -22,19 +22,19 @@ namespace Idempotent.Core.Tests
                         .UseTestServer()
                         .ConfigureServices(services =>
                         {
-                                services.AddControllers();
-                                if (!skipCacheConfiguration) services.AddDistributedMemoryCache();
-                            })
+                            services.AddControllers();
+                            if (!skipCacheConfiguration) services.AddDistributedMemoryCache();
+                        })
                         .Configure(app =>
                         {
 
-                                app.UseMiddleware<IdempotentMiddleware>();
-                                app.UseRouting();
-                                app.UseEndpoints(endpoints =>
-                                {
-                                        endpoints.MapControllers();
-                                    });
+                            app.UseMiddleware<IdempotentMiddleware>();
+                            app.UseRouting();
+                            app.UseEndpoints(endpoints =>
+                            {
+                                endpoints.MapControllers();
                             });
+                        });
                 })
                 .StartAsync();
         }
