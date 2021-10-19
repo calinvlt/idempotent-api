@@ -1,6 +1,5 @@
 using System;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
@@ -14,7 +13,7 @@ namespace Idempotent.Core.Tests
 {
     public class IdempotentMiddlewareTests
     {
-        private async Task<IHost> CreateHttpClient()
+        private async Task<IHost> CreateHostBuilder(bool skipCacheConfiguration = false)
         {
             return await new HostBuilder()
                 .ConfigureWebHost(webBuilder =>
@@ -23,30 +22,38 @@ namespace Idempotent.Core.Tests
                         .UseTestServer()
                         .ConfigureServices(services =>
                         {
-                            services.AddControllers();
-                            services.AddDistributedMemoryCache();
-                        })
+                                services.AddControllers();
+                                if (!skipCacheConfiguration) services.AddDistributedMemoryCache();
+                            })
                         .Configure(app =>
                         {
-                            
-                            app.UseMiddleware<IdempotentMiddleware>();
-                            app.UseRouting();
-                            app.UseEndpoints(endpoints =>
-                            {
-                                endpoints.MapControllers();
+
+                                app.UseMiddleware<IdempotentMiddleware>();
+                                app.UseRouting();
+                                app.UseEndpoints(endpoints =>
+                                {
+                                        endpoints.MapControllers();
+                                    });
                             });
-                        });
                 })
                 .StartAsync();
         }
-        
+
         [Fact]
         public async Task Get_Test_Controller_Returns_OK()
         {
-            using var host = await CreateHttpClient();
+            using var host = await CreateHostBuilder();
             var client = host.GetTestClient();
             var response = await client.GetAsync("/sample");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Fact]
+        public async Task No_Distributed_Cache_Configuration_Throws_Startup_Error()
+        {
+            using var host = await CreateHostBuilder(skipCacheConfiguration: true);
+            var client = host.GetTestClient();
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await client.GetAsync("/sample"));
         }
     }
 }
